@@ -1,5 +1,7 @@
-parsnips dot net
----------
+---
+layout: page
+title: parsnips dot net
+permalink: /
+---
 
-Blah.
-
+parsnips.net is back.

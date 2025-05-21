@@ -1,0 +1,1 @@
+https://github.com/jekyll/minima/blob/master/_layouts/home.html
