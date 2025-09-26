@@ -7,7 +7,7 @@ author:
   email: parsnips@gmail.com
   location: Bend, Oregon, United States
   calendly: https://calendly.com/parsnips
-  website: https://parsnips.net
+  website: http://parsnips.net
 
 # Enhanced Minima setup
 show_excerpts: true
@@ -27,7 +27,7 @@ markdown: kramdown
 kramdown:
   syntax_highlighter: rouge
   syntax_highlighter_opts:
-    css_class: 'highlight'
+    css_class: "highlight"
     line_numbers: false
 
 plugins:
