@@ -1,7 +1,5 @@
 ---
-layout: page
-title: parsnips dot net
-permalink: /
+layout: home
 ---
 
-parsnips.net is back.
+Welcome to my personal technical blog! Here you'll find posts about programming, automation, and various tech topics that interest me.

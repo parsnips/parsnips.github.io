@@ -1,4 +1,35 @@
 theme: minima
 
 title: parsnips dot net
-description: personal technical blog for parsnips
+description: CTO of my desk.
+author:
+  name: Michael Parsons
+  email: parsnips@gmail.com
+  location: Bend, Oregon, United States
+  calendly: https://calendly.com/parsnips
+  website: https://parsnips.net
+
+# Enhanced Minima setup
+show_excerpts: true
+
+# Social links
+minima:
+  social_links:
+    github: parsnips
+    linkedin: parsnips
+
+# Navigation
+header_pages:
+  - about.md
+
+highlighter: rouge
+markdown: kramdown
+kramdown:
+  syntax_highlighter: rouge
+  syntax_highlighter_opts:
+    css_class: 'highlight'
+    line_numbers: false
+
+plugins:
+  - jekyll-feed
+  - jekyll-seo-tag
