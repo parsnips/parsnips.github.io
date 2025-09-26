@@ -1,32 +1,31 @@
-{% assign author = site.author | default: {} %}
-{% assign social = site.minima.social_links | default: {} %}
-{% assign avatar_path = include.avatar | default: '/assets/images/profile.jpg' %}
-{% assign show_location = include.show_location | default: true %}
+{% assign author = site.author | default: {} %} {% assign social =
+site.minima.social_links | default: {} %} {% assign avatar_path = include.avatar
+| default: '/assets/images/profile.jpg' %} {% assign show_location =
+include.show_location | default: true %}
 <div class="author-bio">
-  <img class="author-avatar" src="{{ avatar_path | relative_url }}" alt="{{ include.name | default: author.name | default: site.title }}" />
+  <img
+    class="author-avatar"
+    src="{{ avatar_path | relative_url }}"
+    alt="{{ include.name | default: author.name | default: site.title }}"
+  />
   <div class="author-info">
     <h3>{{ include.name | default: author.name | default: site.title }}</h3>
     {% if include.tagline or site.description %}
-      <p>{{ include.tagline | default: site.description }}</p>
-    {% endif %}
-    {% if author.location and show_location %}
-      <p class="author-location">{{ author.location }}</p>
+    <p>{{ include.tagline | default: site.description }}</p>
+    {% endif %} {% if author.location and show_location %}
+    <p class="author-location">{{ author.location }}</p>
     {% endif %}
     <div class="social-links">
       {% if author.email %}
-        <a href="mailto:{{ author.email }}" title="Email">Email</a>
-      {% endif %}
-      {% if author.calendly %}
-        <a href="{{ author.calendly }}" title="Calendly">Calendly</a>
-      {% endif %}
-      {% if social.github %}
-        <a href="https://github.com/{{ social.github }}" title="GitHub">GitHub</a>
-      {% endif %}
-      {% if social.linkedin %}
-        <a href="https://linkedin.com/in/{{ social.linkedin }}" title="LinkedIn">LinkedIn</a>
-      {% endif %}
-      {% if author.website %}
-        <a href="{{ author.website }}" title="Website">Website</a>
+      <a href="mailto:{{ author.email }}" title="Email">Email</a>
+      {% endif %} {% if author.calendly %}
+      <a href="{{ author.calendly }}" title="Calendly">Calendly</a>
+      {% endif %} {% if social.github %}
+      <a href="https://github.com/{{ social.github }}" title="GitHub">GitHub</a>
+      {% endif %} {% if social.linkedin %}
+      <a href="https://linkedin.com/in/{{ social.linkedin }}" title="LinkedIn"
+        >LinkedIn</a
+      >
       {% endif %}
     </div>
   </div>
