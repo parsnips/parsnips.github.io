@@ -4,8 +4,6 @@ title: About
 permalink: /about/
 ---
 
-# Michael Parsons
-
 {% include author-card.html %}
 
 ---
