@@ -1,0 +1,107 @@
+---
+layout: post
+title: "Redshift, Parquet, and the case of a cup of COPY."
+date: 2025-10-21
+---
+
+As the CTO of my desk at Twisp, I have a lot of responsibilities.  One of them is pretending I'm a world class data engineer.  So when I saw messages from data pipeline slowly piling up in a DLQ... I knew it was time to spring into action.
+
+
+## How It Started
+
+Our data pipeline is pretty straightforward:
+
+```
+Dynamo Streams -> Kinesis Firehose -> S3 -> λ to Parquet -> S3 -> λ to Redshift
+```
+
+We essentially store our protobuf-derived data into S3 as Parquet and then issue a plain `COPY <table> FROM 's3://...' FORMAT AS PARQUET` to ultimately get the data into Redshift.  You may have something similar in your data pipeline.
+
+When I looked at the error logs for these messages that were piling into the DLQ... a dreaded error message was discovered:
+
+```text
+ERROR: Spectrum Scan Error Detail: 
+----------------------------------------------- 
+error: Spectrum Scan Error code: 
+  15007 context: File 'https://s3.us-east-1.amazonaws.com/bucket/file.parquet' has an incompatible Parquet s query:
+  146667179 location: dory_util.cpp:1777 process: worker_thread [pid=30296]
+----------------------------------------------- 
+[ErrorId: 1-68f7ff75-672e60d16356d0f719974665]
+```
+
+Unfortunately Redshift never tells you what is wrong, just that it is wrong!
+
+## Diffing the Files
+
+This worked before, so I dumped two representative files - the last good one and the first broken one - and compared the Parquet metadata. The new file contained an extra field, `index_properties_non_cartesian`, but everything else looked familiar: same message type, same field definitions... Everything looked to be in place:
+
+```parquet
+message Parquet_Custom_Index {
+  required int64 record_begin (TIMESTAMP(MILLIS,true));
+  required binary record_rowid (STRING);
+  required binary record_status (ENUM);
+  required binary record_tenantid (STRING);
+  required int64 record_version (INTEGER(64,false));
+  required binary id;
+  required binary name (STRING);
+  required binary on (ENUM);
+  required binary index_state (ENUM);
+  required binary index_id;
+  required boolean index_properties_unique;
+  required int32 index_properties_buckets (INTEGER(32,true));
+  required boolean index_properties_system;
+  required boolean index_properties_external;
+  required boolean index_properties_historical;
+  required boolean index_properties_asynchronous;
+  required boolean index_properties_non_cartesian;
+  required binary index_partition (JSON);
+  required binary index_sort (JSON);
+  required binary index_filters (JSON);
+  required binary index_referenced_by (JSON);
+  required binary index_schema (JSON);
+  required binary synchronization (ENUM);
+}
+```
+
+I kept banging my head until I [read the docs](https://docs.aws.amazon.com/redshift/latest/dg/r_COPY.html). And something about the syntax jumped out right when I had the columns loaded:
+
+![sus]({{ site.url }}/assets/images/sus.png)
+
+My little voice started to yell at me:  
+
+>Does Redshift `COPY` use _position not name by default???_ 
+
+Fortunately, I've used Postgres in anger enough to know how to get the column metadata for a table.. and that `ordinal_position` would confirm if that column is at the _end_ of my table:
+
+```sql
+select ordinal_position, column_name, data_type
+from information_schema.columns
+where table_name = 'parquet_custom_index'
+order by ordinal_position;
+```
+
+Now things were coming together:
+
+- Our parquet generator inserts the new field immediately after `index_properties_asynchronous`.
+- The Redshift table gained the column through `ALTER TABLE ... ADD COLUMN`, so it lives at the end of the table.
+- Redshift's default COPY without a column list maps Parquet columns by ordinal, not by name.
+
+And finally: _Ordinarily_ (har) when we add a new property in our types, it's appended to the end of the column list and things just work out.. However in this case, because we were dealing with a nested property on a more complex object, there was no "putting it at the end"...
+
+## Putting It Right
+
+In order to deal with these situations you gotta lean on the `[column-list]` capability of the `COPY` statement.
+```sql
+COPY root.parquet_custom_index (
+  <columns-in-parquet-order>
+) FROM 's3://.../new-file.parquet'
+FORMAT AS PARQUET;
+```
+
+Listing columns in the COPY mapped Parquet positions explicitly, so Redshift could place `non_cartesian` in the right spot.
+
+## Lessons Learned
+
+- Adding a column in protobuf doesn't guarantee it lands at the end of the our generated Parquet files.
+- Redshift `ALTER TABLE ... ADD COLUMN` appends to the end, so column order only stays aligned if everything else does.
+- Always pass an explicit column list when loading Parquet into Redshift, especially across schema evolutions.
