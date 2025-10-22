@@ -139,7 +139,7 @@ Now things were coming together:
 - The Redshift table gained the column through `ALTER TABLE ... ADD COLUMN`, and is applied conditionally via a migration.. So it's ordinal is determined by how the table got into it's current state.
 - Redshift's default COPY without a column list maps Parquet columns by ordinal, not by name.
 
-And finally: _Ordinarily_ (har) when we add a new property in our types, it's appended to the end of the column list and things just work out.. However in this case, because we were dealing with a nested property on a more complex object, the new field was put on _the end of the nested propert_, so the new column shows up in the middle!
+And finally: _Ordinarily_ (har) when we add a new property in our types, it's appended to the end of the column list and things just work out.. However in this case, because we were dealing with a nested property on a more complex object, the new field was put on _the end of the nested property_, so the new column shows up in the middle!
 
 ## Putting It Right
 
