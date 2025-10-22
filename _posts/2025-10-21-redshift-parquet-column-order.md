@@ -135,15 +135,16 @@ order by ordinal_position;
 
 Now things were coming together:
 
-- Our parquet generator inserts the new field immediately after `index_properties_asynchronous`.
-- The Redshift table gained the column through `ALTER TABLE ... ADD COLUMN`, so it lives at the end of the table.
+- Our parquet generator generated the schemas as expected in the same order as the protobuf.
+- The Redshift table gained the column through `ALTER TABLE ... ADD COLUMN`, and is applied conditionally via a migration.. So it's ordinal is determined by how the table got into it's current state.
 - Redshift's default COPY without a column list maps Parquet columns by ordinal, not by name.
 
-And finally: _Ordinarily_ (har) when we add a new property in our types, it's appended to the end of the column list and things just work out.. However in this case, because we were dealing with a nested property on a more complex object, there was no "putting it at the end"...
+And finally: _Ordinarily_ (har) when we add a new property in our types, it's appended to the end of the column list and things just work out.. However in this case, because we were dealing with a nested property on a more complex object, the new field was put on _the end of the nested propert_, so the new column shows up in the middle!
 
 ## Putting It Right
 
-In order to deal with these situations you gotta lean on the `[column-list]` capability of the `COPY` statement.
+In order to deal with these situations you gotta lean on the `[column-list]` capability of the `COPY` statement to order the columns in the same way as our parquet:
+
 ```sql
 COPY root.parquet_custom_index (
   <columns-in-parquet-order>
@@ -151,7 +152,7 @@ COPY root.parquet_custom_index (
 FORMAT AS PARQUET;
 ```
 
-Listing columns in the COPY mapped Parquet positions explicitly, so Redshift could place `non_cartesian` in the right spot.
+Running with this allowed our jobs to succeed and our pipeline can go on it's merry way!
 
 ## Lessons Learned
 
