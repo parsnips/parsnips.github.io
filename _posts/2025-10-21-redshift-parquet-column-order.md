@@ -48,7 +48,7 @@ message Index {
     bool external = 4;
     bool historical = 6;
     bool asynchronous = 7;
-    bool non_cartesian = 8; # <--- Added this
+    bool non_cartesian = 8; // <--- Added this
   }
 
   Migration.State state = 1;
