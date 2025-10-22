@@ -33,8 +33,59 @@ Unfortunately Redshift never tells you what is wrong, just that it is wrong!
 
 ## Diffing the Files
 
-This worked before, so I dumped two representative files - the last good one and the first broken one - and compared the Parquet metadata. The new file contained an extra field, `index_properties_non_cartesian`, but everything else looked familiar: same message type, same field definitions... Everything looked to be in place:
+This worked before, so I dumped two representative files - the last good one and the first broken one - and compared the Parquet metadata. 
 
+The new file contained an extra field, `index_properties_non_cartesian`.  This was due to adding a new field `Index.Properties.non_cartesian` to the underlying protobuf schema...
+
+The protobuf schema:
+```protobuf
+message Index {
+  message Properties {
+    reserved 5;
+    bool unique = 1;
+    sint32 buckets = 2;
+    bool system = 3;
+    bool external = 4;
+    bool historical = 6;
+    bool asynchronous = 7;
+    bool non_cartesian = 8; # <--- Added this
+  }
+
+  Migration.State state = 1;
+  bytes id = 2;
+  Properties properties = 3;
+  repeated IndexKey partition = 4;
+  repeated IndexKey sort = 5;
+  map<string, string> filters = 6;
+  repeated string referenced_by = 7;
+  google.protobuf.Value schema = 8;
+}
+
+message CustomIndex {
+  enum OnTable {
+    option (twisp.config.v1.enum_gen_options).skip_protoc_gen_go_json = true;
+    ON_TABLE_ACCOUNT_UNSPECIFIED = 0;
+    ON_TABLE_ACCOUNT_SET = 1;
+    ON_TABLE_TRANSACTION = 2;
+    ON_TABLE_TRANCODE = 3;
+    ON_TABLE_BALANCE = 4;
+    ON_TABLE_ENTRY = 5;
+  }
+  enum Synchronization {
+    option (twisp.config.v1.enum_gen_options).skip_protoc_gen_go_json = true;
+    SYNCHRONIZATION_SYNCHRONOUS_UNSPECIFIED = 0;
+    SYNCHRONIZATION_ASYNCHRONOUS = 1;
+  }
+  bytes id = 1;
+  string name = 2;
+  OnTable on = 3;
+  Index index = 4;
+  Synchronization synchronization = 5;
+}
+
+```
+
+The resulting generated parquet:
 ```parquet
 message Parquet_Custom_Index {
   required int64 record_begin (TIMESTAMP(MILLIS,true));
@@ -62,6 +113,8 @@ message Parquet_Custom_Index {
   required binary synchronization (ENUM);
 }
 ```
+
+Everything looked right, the `non_cartesian` property showed up where I expected to, with the types I expected.
 
 I kept banging my head until I [read the docs](https://docs.aws.amazon.com/redshift/latest/dg/r_COPY.html). And something about the syntax jumped out right when I had the columns loaded:
 
