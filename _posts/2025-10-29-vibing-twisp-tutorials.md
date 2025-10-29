@@ -8,7 +8,7 @@ Like everyone else in tech, I get a little twitchy when the South Park crew chan
 
 <iframe width="560" height="315" src="https://www.youtube.com/embed/APo2p4-WXsc" title="South Park - They're Taking Our Jobs!" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
-Okay, now that the mantra is stuck in your head again, let's talk about how AI actually helped me ship something useful last today.
+Okay, now that the mantra is stuck in your head again, let's talk about how AI actually helped me ship something useful today.
 
 ## Setting the Stage
 
