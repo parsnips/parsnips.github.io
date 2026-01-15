@@ -1,7 +1,7 @@
 ---
 layout: post
-title: "GPTel-Agent: Agentic AI Workflows in Emacs"
-date: 2025-07-17
+title: "Emacs and AI"
+date: 2026-01-14
 ---
 
 I've been running a gptel + gptel-agent setup in Emacs for a while now, and it's fundamentally changed how I work. Here's why I think gptel-agent is the best way to do agentic AI workflows if you're already an Emacs user.
