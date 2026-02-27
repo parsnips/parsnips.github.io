@@ -13,6 +13,7 @@ I spent nearly 2 years at Wabtec working on Positive Train Control, or PTC. If y
 At its core, PTC is beautifully simple. You have a computer on a train, and it's running a loop. On every pass through that loop, it's asking itself one question: should I stop the train?
 
 ![trolly]({{ site.url }}/assets/images/trolly.jpg)
+*The ultimate boolean...if the brakes fail.*
 
 That's it. That's the whole product. One boolean decision, made over and over again, every second.
 
@@ -57,7 +58,7 @@ This wasn't an accident, and it wasn't just organizational inertia. There was a 
 Systems was always going to win. As a computer nerd, I enjoyed the low-level details. How does the device communicate with the computer? What does the interrupt handler look like? But the important decisions were happening a few abstraction levels up. 
 
 ![Always has been]({{ site.url }}/assets/images/Always_has_been.jpg)
-
+*Always has been.*
 
 ## What's Under the Hood
 
