@@ -160,7 +160,7 @@ This happens when the stream is created. Writes use the saved mapping. They don'
 
 I like the outcome: We get IDs that behave correctly under ordinary hash routing, without teaching ExtendDB which machine owns which bucket. Neki stays in charge of the topology.
 
-I am a little scared of how we get that outcome. Maybe someone smarter than me has a better solution?
+I am a little scared of how we get that outcome. The IDs agree with the partition keys under today's bucket layout. Add more buckets, and that agreement can disappear: a record and its stream ID can land on opposite sides of a new boundary. What happens to existing events and consumers holding those IDs? Maybe there's a way to name a range and let Neki track it instead. I don't have that part figured out. If you've solved something like this, I'd love to hear how.
 
 ## The Configuration Part, Finally
 
