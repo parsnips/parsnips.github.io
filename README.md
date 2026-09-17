@@ -193,3 +193,10 @@ gem install --user-install jekyll-seo-tag
 ### Build Failures
 
 Check the GitHub Pages build status in the repository's Actions tab or Pages settings if the site doesn't update after pushing changes.
+
+### Mermaid diagrams
+
+Add `mermaid: true` to a post's front matter and use fenced `mermaid` code blocks.
+The post layout loads Mermaid only for opted-in posts, using a pinned version
+from jsDelivr. Diagrams render in the browser; if JavaScript or the CDN is
+unavailable, the diagram source remains readable.

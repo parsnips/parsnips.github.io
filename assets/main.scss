@@ -210,3 +210,14 @@ pre, code {
     text-align: center;
   }
 }
+
+// Mermaid diagrams retain horizontal scrolling on narrow screens.
+.mermaid-diagram {
+  margin: 1.5rem 0;
+  overflow-x: auto;
+  text-align: center;
+
+  svg {
+    height: auto;
+  }
+}
