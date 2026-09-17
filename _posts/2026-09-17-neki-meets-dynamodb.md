@@ -162,6 +162,8 @@ I like the outcome: We get IDs that behave correctly under ordinary hash routing
 
 I am a little scared of how we get that outcome. The IDs agree with the partition keys under today's bucket layout. Add more buckets, and that agreement can disappear: a record and its stream ID can land on opposite sides of a new boundary. What happens to existing events and consumers holding those IDs? Maybe there's a way to name a range and let Neki track it instead. I don't have that part figured out. If you've solved something like this, I'd love to hear how.
 
+Neki's [shard groups](https://planetscale.com/docs/neki/data-topology) might be a place to look: could we keep logical stream buckets stable and let the groups describe where they live as machines are added? I'm curious whether that gives us a cleaner way to route stream reads without grinding IDs.
+
 ## The Configuration Part, Finally
 
 On the ExtendDB side, the configuration for four equal hash ranges looks like this:
